@@ -30,8 +30,22 @@ export class Pause extends Scene {
             this.scene.stop();
         });
         
+        // Restart button
+        const restartButton = this.add.text(450, 920, 'Restart', {
+            fontFamily: 'Arial',
+            fontSize: 36,
+            color: '#ffffff',
+            align: 'center'
+        }).setOrigin(0.5).setInteractive();
+        
+        restartButton.on('pointerdown', () => {
+            this.scene.stop('Pause');
+            this.scene.stop('Game');
+            this.scene.start('Game');
+        });
+        
         // Main Menu button
-        const menuButton = this.add.text(450, 950, 'Main Menu', {
+        const menuButton = this.add.text(450, 990, 'Main Menu', {
             fontFamily: 'Arial',
             fontSize: 36,
             color: '#ffffff',
