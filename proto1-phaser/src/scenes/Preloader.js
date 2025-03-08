@@ -7,6 +7,10 @@ export class Preloader extends Scene
         super('Preloader');
     }
 
+    /**
+     * Initializes the preloader scene, setting up a background image and a simple progress bar to display the loading progress.
+     * The progress bar is updated using the 'progress' event emitted by the LoaderPlugin.
+     */
     init ()
     {
         //  We loaded this image in our Boot Scene, so we can display it here
@@ -27,6 +31,9 @@ export class Preloader extends Scene
         });
     }
 
+    /**
+     * Preloads the assets for the game, including setting the asset path and loading an image named 'logo.png'.
+     */
     preload ()
     {
         //  Load the assets for the game - Replace with your own assets
@@ -35,6 +42,9 @@ export class Preloader extends Scene
         this.load.image('logo', 'logo.png');
     }
 
+    /**
+     * Performs any necessary setup after all assets have been loaded, such as creating global objects that can be used throughout the game. Then transitions to the MainMenu scene.
+     */
     create ()
     {
         //  When all the assets have loaded, it's often worth creating global objects here that the rest of the game can use.

@@ -1,5 +1,10 @@
 import { Scene } from 'phaser';
 
+/**
+ * Represents the main menu scene of the game.
+ * Initializes the scene by adding a background image, a logo image, and a centered text label for the main menu.
+ * Listens for a single pointer down event to start the 'Game' scene.
+ */
 export class MainMenu extends Scene
 {
     constructor ()
@@ -7,6 +12,11 @@ export class MainMenu extends Scene
         super('MainMenu');
     }
 
+    /**
+     * Initializes the main menu scene.
+     * Adds a background image, a logo image, and a centered text label for the main menu.
+     * Listens for a single pointer down event to start the 'Game' scene.
+     */
     create ()
     {
         this.add.image(512, 384, 'background');

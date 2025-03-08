@@ -1,6 +1,21 @@
 import { GameConfig } from "../config/GameConfig";
 
+/**
+ * Represents a player character in the game.
+ * The `Player` class extends the `Phaser.Physics.Arcade.Sprite` class and
+ * handles the creation and configuration of the player's sprite and physics
+ * properties.
+ */
 export class Player extends Phaser.Physics.Arcade.Sprite {
+    /**
+     * Constructs a new Player instance in the given scene at the specified coordinates.
+     * This method creates the player texture if it doesn't already exist, and configures
+     * the player's physics properties such as collision with world bounds, damping, and drag.
+     *
+     * @param {Phaser.Scene} scene - The scene in which to create the player.
+     * @param {number} x - The x-coordinate of the player's initial position.
+     * @param {number} y - The y-coordinate of the player's initial position.
+     */
     constructor(scene, x, y) {
         // Create texture if needed
         Player.createPlayerTexture(scene);
@@ -15,6 +30,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.setDrag(0.9);
     }
     
+    /**
+     * Creates a texture for the player sprite in the given scene.
+     * The texture is generated using the player configuration from GameConfig.
+     * If the 'playerSprite' texture already exists, this function will return early.
+     *
+     * @param {Phaser.Scene} scene - The scene in which to create the player texture.
+     */
     static createPlayerTexture(scene) {
         if (scene.textures.exists('playerSprite')) return;
         
@@ -35,6 +57,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         graphics.generateTexture('playerSprite', size, size);
     }
     
+    /**
+     * Updates the player's velocity based on the provided movement input and time delta.
+     * Clamps the player's velocity to the maximum speed defined in the game configuration.
+     *
+     * @param {object} movement - An object containing the x and y components of the player's movement.
+     * @param {number} dt - The time delta since the last update, used to scale the acceleration.
+     */
     update(movement, dt) {
         const { maxSpeed, accelFactor } = GameConfig.player;
         const scaledAccelFactor = accelFactor * dt * 60;

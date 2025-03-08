@@ -5,6 +5,11 @@ export class Pause extends Scene {
         super('Pause');
     }
 
+    /**
+     * Creates the pause menu scene with a semi-transparent background, title, and interactive buttons.
+     * Sets up buttons for resuming the game, restarting, and returning to main menu.
+     * Also configures keyboard input for resuming the game with 'P' key.
+     */
     create() {
         // Semi-transparent background
         this.add.rectangle(450, 800, 900, 1600, 0x000000, 0.7);
@@ -62,5 +67,4 @@ export class Pause extends Scene {
             this.scene.resume('Game');
             this.scene.stop();
         });
-    }
-}
+    }}

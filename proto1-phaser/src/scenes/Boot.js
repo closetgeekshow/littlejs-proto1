@@ -1,3 +1,7 @@
+/**
+ * The Boot scene is responsible for loading any assets required for the Preloader scene, such as a game logo or background image.
+ * It also handles orientation changes, adjusting the UI for portrait mode or displaying a "please rotate" message for landscape mode.
+ */
 import { Scene } from 'phaser';
 
 export class Boot extends Scene
@@ -15,6 +19,10 @@ export class Boot extends Scene
         this.load.image('background', 'assets/bg.png');
     }
 
+    /**
+     * Handles the creation of the Boot scene, including starting the Preloader scene and adjusting the UI based on device orientation.
+     * If the device is in portrait mode, the default layout is used. If the device is in landscape mode, a "please rotate" message is displayed.
+     */
     create ()
     {
         this.scene.start('Preloader');

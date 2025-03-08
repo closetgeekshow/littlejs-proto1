@@ -9,6 +9,10 @@ export class Game extends Scene {
     super("Game");
   }
 
+  /**
+   * Preloads the "rexvirtualjoystickplugin" plugin from the specified URL.
+   * This plugin is likely used to handle virtual joystick input for the game.
+   */
   preload() {
     this.load.plugin(
       "rexvirtualjoystickplugin",
@@ -17,6 +21,10 @@ export class Game extends Scene {
     );
   }
 
+  /**
+   * Initializes the game scene by setting up the background color, game components, and pause functionality.
+   * This method is called when the game scene is created.
+   */
   create() {
     // Set background color
     this.cameras.main.setBackgroundColor(GameConfig.backgroundColor);
@@ -37,6 +45,12 @@ export class Game extends Scene {
     });
   }
 
+  /**
+   * Updates the game state during each frame.
+   * Scales the delta time according to the time scale manager, then updates the player's position based on the input controller's movement vector.
+   * @param {number} time - The current time in milliseconds.
+   * @param {number} delta - The time in milliseconds since the last frame.
+   */
   update(time, delta) {
     // Scale delta time according to time scale
     const scaledDelta = this.timeScaleManager.getScaledDelta(delta);
