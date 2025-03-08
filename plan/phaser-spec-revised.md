@@ -16,8 +16,8 @@ This document outlines the technical specifications for implementing Prototype 1
 // Initialize Phaser with a 1280x720 resolution
 const config = {
   type: Phaser.AUTO,
-  width: 1280,
-  height: 720,
+  width: 900,
+  height: 1600,
   physics: {
     default: 'arcade',
     arcade: {
@@ -37,14 +37,12 @@ this.cameras.main.startFollow(this.player);
 this.add.grid(0, 0, this.game.config.width * 2, this.game.config.height * 2, 32, 32, 0x000000, 0, 0x222222, 0.2);
 
 // Support multiple screen resolutions with appropriate scaling
-this.scale.setGameSize(1280, 720);
+this.scale.setGameSize(900, 1600);
 this.scale.scaleMode = Phaser.Scale.FIT;
 this.scale.refresh();
 ```
 
-#### Game Loop
-```javascript
-// Use Phaser's built-in game loop with proper delta time handling
+// Game Loop
 this.update = function(time, delta) {
   // Game update logic here
 };
@@ -76,21 +74,15 @@ this.input.keyboard.on('keydown-THREE', () => { this.time.timeScale = 2.0; });
 this.player = this.add.rectangle(400, 300, 16, 16, 0x0000FF);
 this.physics.add.existing(this.player);
 
-// Add rotation to face mouse cursor or auto-targeted enemy
+// Add rotation to face current target
 this.update = function(time, delta) {
-  if (this.autoTarget && this.currentTarget) {
-    // Face current target
+  if (this.currentTarget) {
     this.player.rotation = Phaser.Math.Angle.Between(
       this.player.x, this.player.y,
       this.currentTarget.x, this.currentTarget.y
     );
   } else {
-    // Face mouse cursor
-    const pointer = this.input.activePointer;
-    this.player.rotation = Phaser.Math.Angle.Between(
-      this.player.x, this.player.y,
-      pointer.worldX, pointer.worldY
-    );
+    // movement direction
   }
 };
 
@@ -106,9 +98,7 @@ this.pulseEffect = () => {
 };
 ```
 
-#### Movement System
-```javascript
-// Create cursor keys for WASD movement
+// Movement System
 this.cursors = this.input.keyboard.addKeys({
   up: Phaser.Input.Keyboard.KeyCodes.W,
   down: Phaser.Input.Keyboard.KeyCodes.S,
@@ -119,7 +109,7 @@ this.cursors = this.input.keyboard.addKeys({
 // Set physics properties
 this.player.body.setCollideWorldBounds(true);
 this.player.body.maxVelocity.set(160);
-this.player.body.drag.set(800); // For deceleration
+this.player.body.drag.set(800);
 
 // Implement movement in update function
 this.update = function(time, delta) {
@@ -144,9 +134,7 @@ this.update = function(time, delta) {
 };
 ```
 
-#### Shooting Mechanics
-```javascript
-// Setup weapon configuration
+// Shooting Mechanics
 this.weapon = {
   fireRate: 250, // 4 shots per second
   bulletSpeed: 400,
@@ -168,30 +156,17 @@ this.bullets = this.physics.add.group({
 
 // Implement firing function
 this.fireBullet = function(time) {
-  if (time - this.weapon.lastFired < this.weapon.fireRate) {
-    return; // Too soon to fire again
+  if (time - this.weapon.lastFired < this.weapon.fireRate || !this.currentTarget) {
+    return;
   }
   
   // Calculate firing direction
-  let directionX, directionY;
-  if (this.autoTarget && this.currentTarget) {
-    // Auto aim at current target
-    const angle = Phaser.Math.Angle.Between(
-      this.player.x, this.player.y,
-      this.currentTarget.x, this.currentTarget.y
-    );
-    directionX = Math.cos(angle);
-    directionY = Math.sin(angle);
-  } else {
-    // Aim at mouse cursor
-    const pointer = this.input.activePointer;
-    const angle = Phaser.Math.Angle.Between(
-      this.player.x, this.player.y,
-      pointer.worldX, pointer.worldY
-    );
-    directionX = Math.cos(angle);
-    directionY = Math.sin(angle);
-  }
+  const angle = Phaser.Math.Angle.Between(
+    this.player.x, this.player.y,
+    this.currentTarget.x, this.currentTarget.y
+  );
+  const directionX = Math.cos(angle);
+  const directionY = Math.sin(angle);
   
   // Create bullet
   const bullet = this.bullets.get(this.player.x, this.player.y);
@@ -216,11 +191,9 @@ this.fireBullet = function(time) {
   }
 };
 
-// Check for input and auto-fire in update loop
+// Auto-fire in update loop
 this.update = function(time, delta) {
-  // Fire on mouse down or when auto-targeting
-  if (this.input.activePointer.isDown || 
-      (this.autoTarget && this.currentTarget)) {
+  if (this.currentTarget) {
     this.fireBullet(time);
   }
   
@@ -692,13 +665,6 @@ this.setupInputManager = function() {
     load: 'F11'
   });
   
-  // Mouse position tracking
-  this.input.on('pointermove', (pointer) => {
-    this.mousePosition = {
-      x: pointer.worldX,
-      y: pointer.worldY
-    };
-  });
   
   // Input event handlers
   this.input.keyboard.on('keydown-T', () => {
