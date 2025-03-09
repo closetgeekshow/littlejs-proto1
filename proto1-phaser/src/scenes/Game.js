@@ -64,7 +64,6 @@ export class Game extends Scene {
     });
 
     this.player.setWeaponSystem(this.playerTargeting, this.bullets);
-    this.lastFiredTime = 0;
 
     this.physics.add.collider(this.player, this.enemies, this.handlePlayerEnemyCollision, null, this);
     this.physics.add.collider(this.bullets, this.enemies, this.handleBulletEnemyCollision, null, this);

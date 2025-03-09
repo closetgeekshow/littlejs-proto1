@@ -5,7 +5,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, 'bulletSprite');
     this.damage = GameConfig.weapon.damage;
     this.lifespan = 0;
-    this.maxLifespan = GameConfig.weapon.range / GameConfig.weapon.bulletSpeed * 1000;
+    this.maxLifespan = GameConfig.player.weaponRange / GameConfig.weapon.bulletSpeed * 1000;
   }
 
   /**

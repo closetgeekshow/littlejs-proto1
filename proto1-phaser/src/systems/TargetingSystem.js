@@ -4,7 +4,7 @@ export class TargetingSystem {
   constructor(scene, options = {}) {
     this.scene = scene;
     this.debugMode = options.debugMode || false;
-    this.range = options.range || GameConfig.weapon.range;
+    this.range = options.range || GameConfig.player.weaponRange;
     this.currentTarget = null;
     this.targetGroup = options.targetGroup || null;
     
@@ -134,13 +134,21 @@ export class TargetingSystem {
     // Clear previous graphics
     this.debugGraphics.clear();
     
-    // Draw targeting radius
-    this.debugGraphics.lineStyle(2, 0x00ff00, 0.5);
+    // Always draw targeting radius
+    this.debugGraphics.lineStyle(
+      GameConfig.targeting.debug.lineThickness || 2, 
+      GameConfig.targeting.debug.rangeColor || 0x00ff00, 
+      GameConfig.targeting.debug.alpha || 0.5
+    );
     this.debugGraphics.strokeCircle(x, y, this.range);
     
-    // Draw line to current target if one exists
+    // Only draw line to current target if one exists
     if (this.currentTarget) {
-      this.debugGraphics.lineStyle(2, 0xff0000, 0.8);
+      this.debugGraphics.lineStyle(
+        GameConfig.targeting.debug.lineThickness || 2, 
+        GameConfig.targeting.debug.lineColor || 0x00ff00, 
+        GameConfig.targeting.debug.alpha || 0.8
+      );
       this.debugGraphics.lineBetween(
         x, y, 
         this.currentTarget.x, this.currentTarget.y

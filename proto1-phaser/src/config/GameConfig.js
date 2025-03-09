@@ -170,11 +170,11 @@ export const GameConfig = {
   player: {
     startX: 450,
     startY: 800,
-    size: 90,
+    size: 60,
     maxSpeed: 500,
     accelFactor: 10,
     health: 3,
-    weaponRange: 10,
+    weaponRange: 300,
     color: 0x0000ff,
     // Add detailed invulnerability settings
     invulnerability: {
@@ -196,7 +196,7 @@ export const GameConfig = {
    */
   weapon: {
     fireRate: 250, // Time between shots in milliseconds
-    bulletSpeed: 400,
+    bulletSpeed: 1000,
     bulletSize: 20,
     damage: 1,
     range: 500, // How far bullets travel before disappearing
