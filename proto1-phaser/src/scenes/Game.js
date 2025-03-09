@@ -29,12 +29,15 @@ export class Game extends Scene {
     // Set background color
     this.cameras.main.setBackgroundColor(GameConfig.backgroundColor);
 
+    /* @todo Setup enemy collision (you'll need to add this when you implement enemies)
+     * this.physics.add.overlap(this.player, this.enemies, this.handlePlayerEnemyCollision, null, this);
+     */
     // Setup game components
     this.inputController = new InputController(this);
     this.timeScaleManager = new TimeScaleManager(this);
     this.player = new Player(
-      this, 
-      GameConfig.player.startX, 
+      this,
+      GameConfig.player.startX,
       GameConfig.player.startY
     );
 
@@ -43,6 +46,27 @@ export class Game extends Scene {
       this.scene.pause();
       this.scene.launch("Pause");
     });
+  }
+
+  /**
+   * Handles the collision between the player and an enemy.
+   * If the player takes damage, applies a knockback force to the player based on the angle between the player and the enemy.
+   * @param {Phaser.GameObjects.GameObject} player - The player game object.
+   * @param {Phaser.GameObjects.GameObject} enemy - The enemy game object.
+   */
+  handlePlayerEnemyCollision(player, enemy) {
+    if (player.takeDamage(GameConfig.mechanics.damage.enemyToPlayer)) {
+      // Optional: Apply knockback
+      const angle = Phaser.Math.Angle.Between(
+        enemy.x,
+        enemy.y,
+        player.x,
+        player.y
+      );
+      const knockbackForce = GameConfig.mechanics.knockback.force;
+      player.body.velocity.x = Math.cos(angle) * knockbackForce;
+      player.body.velocity.y = Math.sin(angle) * knockbackForce;
+    }
   }
 
   /**
