@@ -21,18 +21,47 @@ export class InputController {
             w: 'W', a: 'A', s: 'S', d: 'D' 
         });
         
-        // Virtual joystick with config values
-        const { x, y, radius, baseRadius, thumbRadius, baseColor, thumbColor, forceMin } = GameConfig.joystick;
+        // Get joystick settings from config
+        const { radius, baseRadius, thumbRadius, baseColor, thumbColor, forceMin } = GameConfig.joystick;
         
+        // Create invisible base and thumb for the joystick
+        const baseGameObject = scene.add.circle(0, 0, baseRadius, baseColor, 0.5);
+        const thumbGameObject = scene.add.circle(0, 0, thumbRadius, thumbColor, 0.8);
+        
+        // Make them invisible initially
+        baseGameObject.setVisible(false);
+        thumbGameObject.setVisible(false);
+        
+        // Create the joystick but don't set fixed position
         this.joyStick = scene.plugins.get('rexvirtualjoystickplugin').add(scene, {
-            x: x,
-            y: y,
             radius: radius,
-            base: scene.add.circle(0, 0, baseRadius, baseColor, 0.5),
-            thumb: scene.add.circle(0, 0, thumbRadius, thumbColor, 0.8),
-            dir: '4dir',
+            base: baseGameObject,
+            thumb: thumbGameObject,
+            dir: "4way",
             forceMin: forceMin,
-            fixed: true,
+            fixed: false, // Not fixed position
+            enable: false, // Disabled initially
+        });
+        
+        // Add touch start event listener to the scene
+        scene.input.on('pointerdown', (pointer) => {
+            // Position joystick where the pointer is
+            this.joyStick.x = pointer.x;
+            this.joyStick.y = pointer.y;
+            
+            // Make joystick visible
+            baseGameObject.setVisible(true);
+            thumbGameObject.setVisible(true);
+            
+            // Enable the joystick
+            this.joyStick.setEnable(true);
+        });
+        
+        // Hide joystick when touch ends
+        scene.input.on('pointerup', () => {
+            baseGameObject.setVisible(false);
+            thumbGameObject.setVisible(false);
+            this.joyStick.setEnable(false);
         });
         
         // Add global pointer up listeners to handle edge cases
@@ -40,11 +69,9 @@ export class InputController {
         scene.input.on('mouseleave', this.handlePointerUp, this);
         scene.input.on('pointerleave', this.handlePointerUp, this);
         
-        // For cases where the pointer goes outside the browser window
         window.addEventListener('mouseup', this.handlePointerUp.bind(this));
         window.addEventListener('touchend', this.handlePointerUp.bind(this));
     }
-
     destroy() {
         window.removeEventListener('mouseup', this.handlePointerUp.bind(this));
         window.removeEventListener('touchend', this.handlePointerUp.bind(this));
@@ -54,9 +81,11 @@ export class InputController {
      * This is used to handle edge cases where the pointer is released outside the game area.
      */
     handlePointerUp() {
-        // Manually reset joystick if needed
-        if (this.joyStick && this.joyStick.force > 0) {
-            //this.joyStick.clearVector();
+        // Hide and disable joystick
+        if (this.joyStick) {
+            this.joyStick.base.setVisible(false);
+            this.joyStick.thumb.setVisible(false);
+            this.joyStick.setEnable(false);
         }
     }
     
