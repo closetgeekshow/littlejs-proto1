@@ -73,7 +73,7 @@ export class TargetingSystem {
       return this.findClosestRealTarget(x, y);
     } else {
       // Generate a simulated target when no real targets exist
-      return this.generateSimulatedTarget(x, y);
+      return null
     }
   }
   

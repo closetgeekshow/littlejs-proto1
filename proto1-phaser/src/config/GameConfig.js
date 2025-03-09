@@ -200,7 +200,7 @@ export const GameConfig = {
     bulletSize: 20,
     damage: 1,
     range: 500, // How far bullets travel before disappearing
-    color: 0xff0000, // Red bullets
+    color: 0x0000cc, // Red bullets
   },
 
   
