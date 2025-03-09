@@ -201,13 +201,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (!this.targetingSystem || !this.bullets) return;
     if (time - this.lastFiredTime < GameConfig.weapon.fireRate) return;
 
-    const target = this.targetingSystem.findNearestTarget(this.x, this.y);
+    // Get current target instead of finding a new one each time
+    const target = this.targetingSystem.getCurrentTarget(this.x, this.y);
     if (!target) return;
 
     const bullet = this.bullets.get();
     if (!bullet) return;
 
-    //console.log(`Firing bullet at target position: (${target.x}, ${target.y})`);
+    // Fire bullet at target
     bullet.fire(this.x, this.y, target.x, target.y);
     this.lastFiredTime = time;
   }

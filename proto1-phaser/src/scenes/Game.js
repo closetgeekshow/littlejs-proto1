@@ -5,6 +5,8 @@ import { TimeScaleManager } from "../managers/TimeScaleManager";
 import { GameConfig } from "../config/GameConfig";
 import { Bullet } from "../entities/Bullet";
 import { TargetingSystem } from "../systems/TargetingSystem";
+import { EnemySpawner } from "../systems/EnemySpawner";
+import { Enemy } from "../entities/Enemy";
 
 export class Game extends Scene {
   constructor() {
@@ -16,7 +18,6 @@ export class Game extends Scene {
    * This plugin is likely used to handle virtual joystick input for the game.
    */
   preload() {
-    //console.log("Preloading assets...");
     this.load.plugin(
       "rexvirtualjoystickplugin",
       "https://raw.githubusercontent.com/rexrainbow/phaser3-rex-notes/master/dist/rexvirtualjoystickplugin.min.js",
@@ -29,7 +30,6 @@ export class Game extends Scene {
    * This method is called when the game scene is created.
    */
   create() {
-    //console.log("Creating game scene...");
     this.cameras.main.setBackgroundColor(GameConfig.backgroundColor);
     this.inputController = new InputController(this);
     this.timeScaleManager = new TimeScaleManager(this);
@@ -39,14 +39,18 @@ export class Game extends Scene {
       GameConfig.player.startY
     );
 
-    // Pause game functionality
     this.input.keyboard.on("keydown-P", () => {
-      //console.log("Game paused");
       this.scene.pause();
       this.scene.launch("Pause");
     });
 
-    // Create bullet group for pooling
+    this.enemies = this.physics.add.group({
+      classType: Enemy,
+      runChildUpdate: false
+    });
+
+    this.enemySpawner = new EnemySpawner(this, this.enemies);
+
     this.bullets = this.physics.add.group({
       classType: Bullet,
       maxSize: 30,
@@ -54,16 +58,21 @@ export class Game extends Scene {
     });
 
     this.playerTargeting = new TargetingSystem(this, {
-      targetType: 'enemy',
-      range: GameConfig.weapon.range * 1.5,
+      range: GameConfig.player.weaponRange,
+      targetGroup: this.enemies,
+      debugMode: GameConfig.core.debugMode || false,
     });
 
     this.player.setWeaponSystem(this.playerTargeting, this.bullets);
     this.lastFiredTime = 0;
 
-    //console.log("Game scene created successfully.");
-  }
+    this.physics.add.collider(this.player, this.enemies, this.handlePlayerEnemyCollision, null, this);
+    this.physics.add.collider(this.bullets, this.enemies, this.handleBulletEnemyCollision, null, this);
 
+    this.time.delayedCall(2000, () => {
+      this.enemySpawner.startNextWave();
+    });
+  }
   /**
    * Handles the collision between the player and an enemy.
    * If the player takes damage, applies a knockback force to the player based on the angle between the player and the enemy.
@@ -71,17 +80,25 @@ export class Game extends Scene {
    * @param {Phaser.GameObjects.GameObject} enemy - The enemy game object.
    */
   handlePlayerEnemyCollision(player, enemy) {
-    if (player.takeDamage(GameConfig.mechanics.damage.enemyToPlayer)) {
-      const angle = Phaser.Math.Angle.Between(
-        enemy.x,
-        enemy.y,
-        player.x,
-        player.y
-      );
-      const knockbackForce = GameConfig.mechanics.knockback.force;
-      player.body.velocity.x = Math.cos(angle) * knockbackForce;
-      player.body.velocity.y = Math.sin(angle) * knockbackForce;
+    player.takeDamage(enemy.damage || GameConfig.enemy.damage);
+    
+    const angle = Phaser.Math.Angle.Between(
+      enemy.x, enemy.y, player.x, player.y
+    );
+    const knockbackForce = GameConfig.mechanics.knockback.force;
+    player.body.velocity.x = Math.cos(angle) * knockbackForce;
+    player.body.velocity.y = Math.sin(angle) * knockbackForce;
+  }
+
+  handleBulletEnemyCollision(bullet, enemy) {
+    if (enemy.takeDamage(bullet.damage || GameConfig.weapon.damage)) {
+      if (enemy.health <= 0) {
+        this.enemySpawner.enemyDestroyed();
+      }
     }
+    
+    bullet.setActive(false);
+    bullet.setVisible(false);
   }
 
   /**
@@ -95,52 +112,20 @@ export class Game extends Scene {
   update(time, delta) {
     const scaledDelta = this.timeScaleManager.getScaledDelta(delta);
     const dt = scaledDelta / 1000;
-
+    
     if (this.player && this.player.active) {
-      //console.log("Updating player...");
       this.player.update(dt, time);
+      
+      // Add this line to render debug targeting info
+      if (this.playerTargeting) {
+        this.playerTargeting.debugRender(this.player.x, this.player.y);
+      }
+      
+      this.enemies.getChildren().forEach(enemy => {
+        if (enemy.active) {
+          enemy.update(time, delta, this.player.x, this.player.y);
+        }
+      });
     }
-  }
-
-  /**
-   * Generates the coordinates of a random position on the edge of the game screen.
-   * This is used to spawn new enemies at random positions around the game area.
-   * @returns {Object} An object with `x` and `y` properties representing the generated coordinates.
-   */
-  getNearestEnemy() {
-    const side = Phaser.Math.Between(0, 3);
-    let x, y;
-
-    switch (side) {
-      case 0: // top
-        x = Phaser.Math.Between(0, this.game.config.width);
-        y = -50;
-        break;
-      case 1: // right
-        x = this.game.config.width + 50;
-        y = Phaser.Math.Between(0, this.game.config.height);
-        break;
-      case 2: // bottom
-        x = Phaser.Math.Between(0, this.game.config.width);
-        y = this.game.config.height + 50;
-        break;
-      case 3: // left
-        x = -50;
-        y = Phaser.Math.Between(0, this.game.config.height);
-        break;
-    }
-
-    return { x, y };
-  }
-
-  /**
-   * Handles the collision between a bullet and an enemy.
-   * Sets the bullet to be inactive and invisible.
-   * @param {Phaser.GameObjects.Sprite} bullet - The bullet object.
-   * @param {Phaser.GameObjects.Sprite} enemy - The enemy object.
-   */
-  handleBulletEnemyCollision(bullet, enemy) {
-    bullet.setActive(false);
-    bullet.setVisible(false);
   }
 }

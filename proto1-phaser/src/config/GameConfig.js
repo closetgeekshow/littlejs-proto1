@@ -14,6 +14,7 @@ export const GameConfig = {
     type: Phaser.AUTO,
     parent: "game-container",
     backgroundColor: "#028af8",
+    debugMode: true,
   },
 
   /**
@@ -62,7 +63,6 @@ export const GameConfig = {
     default: "arcade",
     arcade: {
       gravity: { y: 0 },
-      debug: false,
     },
   },
 
@@ -109,7 +109,7 @@ export const GameConfig = {
     },
     flash: {
       duration: 500, // Duration of flash effect in ms
-      color: { r: 255, g: 0, b: 0 }, // Color of flash (red)
+      color: 0xff0000, // Color of flash (red)
     },
   },
 
@@ -128,16 +128,24 @@ export const GameConfig = {
     },
   },
 
-  // Add this to the existing GameConfig object
+  // Update the targeting section in the existing GameConfig object
   /**
    * Targeting system configuration
    * @property {Object} targeting - Targeting system settings
-   * @property {number} targeting.defaultRange - Default targeting range
-   * @property {boolean} targeting.preferClosest - Whether to prefer closest targets
+   * @property {boolean} targeting.debugMode - Whether to show targeting visualizations
+   * @property {Object} targeting.debug - Debug visualization settings
+   * @property {number} targeting.debug.rangeColor - Color for the targeting range circle
+   * @property {number} targeting.debug.lineColor - Color for the line to current target
+   * @property {number} targeting.debug.lineThickness - Thickness of targeting lines
+   * @property {number} targeting.debug.alpha - Alpha transparency for debug graphics
    */
   targeting: {
-    defaultRange: 800,
-    preferClosest: true,
+    debug: {
+      rangeColor: 0x00ff00, // Green for targeting range
+      lineColor: 0xff0000, // Red for target line
+      lineThickness: 3,
+      alpha: 1,
+    },
   },
 
   /**
@@ -163,11 +171,11 @@ export const GameConfig = {
     startX: 450,
     startY: 800,
     size: 90,
-    innerSize: 72,
     maxSpeed: 500,
     accelFactor: 10,
     health: 3,
-
+    weaponRange: 10,
+    color: 0x0000ff,
     // Add detailed invulnerability settings
     invulnerability: {
       duration: 1000, // Duration player is invulnerable after hit
@@ -175,15 +183,6 @@ export const GameConfig = {
       blinkCount: 10, // Number of blinks during invulnerability
     },
 
-    /**
-     * Configures the colors for the player entity.
-     * @property {number} border - The hexadecimal color value for the player's border.
-     * @property {number} fill - The hexadecimal color value for the player's fill.
-     */
-    colors: {
-      border: 0x000000,
-      fill: 0x0000ff,
-    },
   },
 
   /**
@@ -203,6 +202,31 @@ export const GameConfig = {
     range: 500, // How far bullets travel before disappearing
     color: 0xff0000, // Red bullets
   },
+
+  
+  /**
+   * Configures the settings for the enemy entities in the game.
+   * @property {number} size - The size of the enemy entities.
+   * @property {number} health - The initial health of the enemy entities.
+   * @property {number} speed - The movement speed of the enemy entities.
+   * @property {number} damage - The amount of damage the enemy entities deal.
+   * @property {number} spawnRate - The time in milliseconds between enemy spawns.
+   * @property {number} maxEnemies - The maximum number of enemies in a wave.
+   * @property {number} waveDelay - The time in milliseconds between enemy waves.
+   * @property {Object} color - The hexadecimal color value for the enemy fill.
+   */
+  enemy: {
+    size: 60,
+    health: 2,
+    speed: 400,
+    damage: 1,
+    spawnRate: 2000, // ms between spawns
+    maxEnemies: 50, // max enemies in a wave
+    waveDelay: 5000, // ms between waves
+    borderWidth: 9,
+    color: 0xffA500, // Orange color for enemies
+  },
+
   /**
    * Configures the settings for the on-screen joystick control.
    * @property {Object} joystick - On-screen joystick settings
