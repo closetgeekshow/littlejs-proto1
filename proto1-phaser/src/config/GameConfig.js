@@ -128,6 +128,18 @@ export const GameConfig = {
     },
   },
 
+  // Add this to the existing GameConfig object
+  /**
+   * Targeting system configuration
+   * @property {Object} targeting - Targeting system settings
+   * @property {number} targeting.defaultRange - Default targeting range
+   * @property {boolean} targeting.preferClosest - Whether to prefer closest targets
+   */
+  targeting: {
+    defaultRange: 800,
+    preferClosest: true,
+  },
+
   /**
    * Player configuration
    * @property {Object} player - Player entity settings
@@ -152,8 +164,8 @@ export const GameConfig = {
     startY: 800,
     size: 90,
     innerSize: 72,
-    maxSpeed: 120,
-    accelFactor: 0.25,
+    maxSpeed: 500,
+    accelFactor: 10,
     health: 3,
 
     // Add detailed invulnerability settings
@@ -163,12 +175,34 @@ export const GameConfig = {
       blinkCount: 10, // Number of blinks during invulnerability
     },
 
+    /**
+     * Configures the colors for the player entity.
+     * @property {number} border - The hexadecimal color value for the player's border.
+     * @property {number} fill - The hexadecimal color value for the player's fill.
+     */
     colors: {
       border: 0x000000,
       fill: 0x0000ff,
     },
   },
 
+  /**
+   * Configures the settings for the player's weapon.
+   * @property {number} fireRate - Time between shots in milliseconds.
+   * @property {number} bulletSpeed - Speed of the bullets.
+   * @property {number} bulletSize - Size of the bullets.
+   * @property {number} damage - Amount of damage the bullets deal.
+   * @property {number} range - How far the bullets travel before disappearing.
+   * @property {number} color - Color of the bullets (hexadecimal).
+   */
+  weapon: {
+    fireRate: 250, // Time between shots in milliseconds
+    bulletSpeed: 400,
+    bulletSize: 20,
+    damage: 1,
+    range: 500, // How far bullets travel before disappearing
+    color: 0xff0000, // Red bullets
+  },
   /**
    * Configures the settings for the on-screen joystick control.
    * @property {Object} joystick - On-screen joystick settings
@@ -185,12 +219,12 @@ export const GameConfig = {
   joystick: {
     x: 450,
     y: 1400,
-    radius: 60,
+    radius: 140,
     baseRadius: 140,
     thumbRadius: 70,
     baseColor: 0x888888,
     thumbColor: 0xcccccc,
-    forceMin: 70,
+    forceMin: 20,
   },
 
   /**
@@ -215,12 +249,12 @@ export const GameConfig = {
    */
   ui: {
     timeScaleText: {
-      x: 20,
+      x: 460,
       y: 20,
       style: {
         fontFamily: "Arial",
         fontSize: "3rem",
-        color: "#ffffff",
+        color: "#000000",
       },
     },
 

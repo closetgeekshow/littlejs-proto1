@@ -30,7 +30,7 @@ export class InputController {
             radius: radius,
             base: scene.add.circle(0, 0, baseRadius, baseColor, 0.5),
             thumb: scene.add.circle(0, 0, thumbRadius, thumbColor, 0.8),
-            dir: '8dir',
+            dir: '4dir',
             forceMin: forceMin,
             fixed: true,
         });
@@ -56,7 +56,7 @@ export class InputController {
     handlePointerUp() {
         // Manually reset joystick if needed
         if (this.joyStick && this.joyStick.force > 0) {
-            this.joyStick.resetForce();
+            //this.joyStick.clearVector();
         }
     }
     
@@ -69,12 +69,12 @@ export class InputController {
         const speed = GameConfig.player.maxSpeed;
         let x = 0;
         let y = 0;
-        
+
         // First check joystick input
         if (this.joyStick && this.joyStick.force > 0) {
             return {
-                x: this.joyStick.forceX * 0.7,
-                y: this.joyStick.forceY * 0.7,
+                x: this.joyStick.forceX,
+                y: this.joyStick.forceY,
             };
         } else {
             // Keyboard input
@@ -83,14 +83,14 @@ export class InputController {
             y = (this.wasd.s.isDown || this.cursors.down.isDown) - 
                 (this.wasd.w.isDown || this.cursors.up.isDown);
         }
-        
+
         // Normalize the vector if it has length
         const length = Math.sqrt(x * x + y * y);
         if (length > 0) {
             x = x / length;
             y = y / length;
         }
-        
+
         // Apply speed after normalization
         return {
             x: x * speed,

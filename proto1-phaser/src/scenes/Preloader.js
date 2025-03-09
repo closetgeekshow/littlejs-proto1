@@ -1,4 +1,5 @@
 import { Scene } from 'phaser';
+import { TextureGenerator } from '../utils/TextureGenerator';
 
 export class Preloader extends Scene
 {
@@ -36,10 +37,12 @@ export class Preloader extends Scene
      */
     preload ()
     {
-        //  Load the assets for the game - Replace with your own assets
+        // Load the assets for the game
         this.load.setPath('assets');
-
         this.load.image('logo', 'logo.png');
+        
+        // Generate all textures
+        TextureGenerator.generateAllTextures(this);
     }
 
     /**
